@@ -314,19 +314,6 @@ Key takeaways from today
 
 ---
 
-## Best practices recap
-
-1. **Start simple** - don't over-engineer from the start
-2. **Be explicit** - don't assume the model knows your intent
-3. **Provide context** - give the model what it needs to succeed
-4. **Use examples** - when the task format is ambiguous
-5. **Iterate** - refine based on results
-6. **Test thoroughly** - edge cases reveal prompt weaknesses
-
-**Remember:** Effective prompting is a skill that improves with practice
-
----
-
 ## Next lesson preview
 
 **Lesson 47: Advanced prompting strategies**
@@ -341,8 +328,3 @@ We'll cover:
 These techniques unlock more complex LLM capabilities and improve reliability.
 
 ---
-
-# Questions?
-
-**Office hours:** After class
-**Resources:** Check the course repo for prompt templates and examples
