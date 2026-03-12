@@ -1,14 +1,30 @@
 '''Chat bot demo using a llama.cpp server with the OpenAI-compatible API.
 
-Start llama-server with the GPT-OSS-120B MoE model, splitting expert layers to CPU:
+--- Option 1: Connect to the public class server via the API ---
 
-$ llama-server \
-    -m model.gguf \
-    --n-gpu-layers 999 \
-    --n-cpu-moe 36 \
-    -c 0 --flash-attn on \
-    --jinja \
-    --host 0.0.0.0 --port 8502 --api-key "$GPT_API_KEY"
+1. Create a .env file in the repo root with the server address and your API key:
+
+   PERDRIZET_URL=<server-address-provided-in-class>
+   PERDRIZET_API_KEY=<api-key-provided-in-class>
+
+2. Run the chatbot - it will automatically connect to the remote server:
+
+   $ python src/llamacpp_chatbot.py
+
+--- Option 2: Build and run the server locally ---
+
+See README.md for instructions on how to build llama.cpp and start the server.
+
+Once the server is running, run the chatbot (no .env needed, defaults to localhost:8502 with API key "dummy"):
+
+   $ python src/llamacpp_chatbot.py
+
+---
+
+Environment variables (read from .env file if present):
+- PERDRIZET_URL: Remote server address (default: localhost:8502)
+- PERDRIZET_API_KEY: API key for remote servers
+- LLAMA_API_KEY: API key for localhost (default: "dummy")
 '''
 
 import os
@@ -19,14 +35,18 @@ from openai import OpenAI
 load_dotenv()
 
 # Configuration
-api_key = os.environ.get('PERDRIZET_API_KEY', 'dummy')
 server = os.environ.get('PERDRIZET_URL', 'localhost:8502')
 
-# Build the base URL: use HTTPS for remote servers, HTTP for localhost
+# For localhost, default to 'dummy' API key unless explicitly set
+# For remote servers, use the API key from the environment
 if server.startswith('localhost') or server.startswith('127.'):
+    api_key = os.environ.get('LLAMA_API_KEY', 'dummy')
     base_url = f'http://{server}/v1'
+
 else:
-    base_url = f'https://{server}:9472/v1'
+    api_key = os.environ.get('PERDRIZET_API_KEY', 'dummy')
+    base_url = f'https://{server}/v1'
+
 temperature = 0.7
 
 system_prompt = (
