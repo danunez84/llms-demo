@@ -49,6 +49,7 @@ Once the container is ready you can start running the demos - no extra setup nee
 | `src/ollama_chatbot.py` | Terminal chatbot | Ollama + LangChain |
 | `src/llamacpp_chatbot.py` | Terminal chatbot using a large MoE model | llama.cpp + OpenAI client |
 | `src/gradio_chatbot.py` | Web-based chatbot with Gradio UI | Ollama + LangChain + Gradio |
+| `src/huggingface_chatbot.py` | Terminal chatbot with direct model loading | HuggingFace Transformers |
 
 ### Running the demos
 
@@ -115,6 +116,15 @@ ollama pull qwen2.5:3b
 python src/gradio_chatbot.py
 
 # 4. Open the URL shown in the terminal (usually http://127.0.0.1:7860)
+```
+
+**HuggingFace chatbot**:
+```bash
+# 1. Run the chatbot (downloads model on first run)
+python src/huggingface_chatbot.py
+
+# Note: This loads the model directly into memory - no inference server needed.
+# First run will download ~6GB model files to models/hugging_face/
 ```
 
 ---
