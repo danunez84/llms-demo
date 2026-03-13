@@ -2,8 +2,15 @@
     "cSpell.words": [
         "chatbot",
         "chatbots",
+        "DGGML",
         "dotenv",
+        "ggml",
+        "GGUF",
         "langchain",
+        "llamacpp",
+        "mmproj",
+        "mxfp",
+        "noctrex",
         "ollama",
         "qwen"
     ]
