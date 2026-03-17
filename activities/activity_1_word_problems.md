@@ -14,88 +14,105 @@ In this activity, you'll work through a series of word problems using an LLM. Yo
 
 ## Setup
 
-### Option 1: Use the chatbot demos (recommended)
+### Use the Gradio chatbot (recommended)
 
-Both chatbot scripts in this repo work interactively - you can have a multi-turn conversation with the LLM. This is perfect for iterating on your prompts.
+The Gradio chatbot provides an interactive web interface where you can experiment with different system prompts directly in the UI. This is perfect for learning prompting strategies without editing code.
 
-**Start the Ollama chatbot:**
+**Start the Gradio chatbot:**
+
 ```bash
-# In one terminal, make sure Ollama is running
+# Make sure your backend is running:
+# For Ollama:
 ollama serve
 
-# In another terminal, run the chatbot
-python src/ollama_chatbot.py
+# For llama.cpp, see the systemd-deployment docs
+
+# Then start the chatbot:
+python src/gradio_chatbot.py
 ```
 
-**Or start the llama.cpp chatbot:**
-```bash
-# Make sure the llama-server is running (see README for full command)
-# Then run the chatbot
-python src/llamacpp_chatbot.py
+**Access the interface:**
+
+Open your browser to `http://localhost:7860` (or the URL shown in the terminal).
+
+### How to use the Gradio chatbot for word problems
+
+The interface has three main sections:
+
+1. **Backend selector** - Choose between Ollama or llama.cpp
+2. **System Prompt field** - This is where you'll experiment with different prompting strategies
+3. **Chat interface** - Where you send messages and see responses
+
+**Basic workflow:**
+
+1. **Start with a default system prompt:**
+   ```
+   You are a helpful assistant that solves math word problems.
+   ```
+
+2. **Enter your word problem** in the chat and observe the response
+
+3. **Modify the system prompt** to test different techniques:
+   ```
+   You are a helpful math tutor. When solving problems, always show your 
+   work step by step. Break down complex problems into smaller steps and 
+   explain your reasoning clearly.
+   ```
+
+4. **Try the same problem again** by clearing the chat (use the Clear button) and re-entering it
+
+5. **Compare results** - which system prompt produced better reasoning?
+
+### Prompting strategies to experiment with
+
+Try modifying the system prompt with these techniques:
+
+**Chain-of-thought prompting:**
+```
+You are a helpful math tutor. Always solve problems step by step. 
+Show your reasoning for each step before moving to the next one.
 ```
 
-### How to use the chatbots for word problems
-
-1. **Start basic:** Type the word problem question directly into the chat
-   ```
-   User: A baker made 60 cookies. She sold 2/3 of them...
-   ```
-
-2. **Try again with improvements:** The conversation remembers context, so you can say:
-   ```
-   User: Let me try that again with more structure. [paste question]
-   Let's think step by step.
-   ```
-
-3. **Start fresh if needed:** Type `exit` to quit and restart the script for a clean conversation
-
-### Adapting the chatbot for specific techniques
-
-**To use chain-of-thought consistently:**
-
-You can modify the chatbot's system prompt before running it. For example, in `src/ollama_chatbot.py`, find this section:
-
-```python
-system_prompt = (
-    'You are a helpful teaching assistant at an AI/ML boot camp.',
-    'Answer questions in simple language with examples when possible.',
-    'Answer in the style of a pirate and use nautical themed analogies.'
-)
+**Structured output:**
+```
+You are a helpful math tutor. For each problem:
+1. Identify what you know
+2. Identify what you need to find
+3. Plan your approach
+4. Solve step by step
+5. State your final answer clearly
 ```
 
-Change it to encourage step-by-step reasoning:
-
-```python
-system_prompt = (
-    'You are a helpful math tutor. When solving problems, always show your '
-    'work step by step. Break down complex problems into smaller steps and '
-    'explain your reasoning clearly.'
-)
+**Self-verification:**
+```
+You are a careful math tutor. Solve problems step by step, then 
+double-check your work by working backwards or using a different method.
 ```
 
-**To test different approaches without modifying code:**
-
-Just include your instructions in each message:
-- "Solve this step by step: [problem]"
-- "Show your work: [problem]"
-- "Let's think through this carefully: [problem]"
+**Role-specific:**
+```
+You are an elementary school math teacher. Explain your reasoning 
+simply and clearly, as if teaching a 10-year-old student.
+```
 
 ### Tips for success
 
-- **Copy-paste is your friend:** Keep the word problems in a text editor and paste them into the chat
-- **Document your experiments:** Note which prompting strategy worked for each problem
-- **Compare approaches:** Try the same problem with different prompts to see what changes
-- **Use the conversation history:** The chatbot remembers previous messages, which can be helpful (or not!)
+- **Test one strategy at a time:** Change only the system prompt between attempts
+- **Clear the chat between tests:** Use the Clear button to start fresh conversations
+- **Document your experiments:** Note which prompting strategy worked best for each problem
+- **Compare side-by-side:** Try the same problem with different system prompts and compare
+- **Backend matters:** You might get different results with Ollama vs llama.cpp
 
 ---
 
 ## Word problems
 
 For each problem below:
-1. Try a **basic prompt** first (just the question)
-2. Observe the result - did it work? What went wrong?
-3. Apply a **prompting technique** to improve it
-4. Compare the results
+1. Start with a **simple system prompt** (e.g., "You are a helpful assistant")
+2. Enter the problem and **observe the result** - did it work? What went wrong?
+3. **Modify the system prompt** to apply a prompting technique
+4. Clear the chat and **try the problem again**
+5. **Compare the results** - what changed?
 
 ### Problem 1: The cookie problem
 
