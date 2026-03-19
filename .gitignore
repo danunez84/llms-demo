@@ -4,6 +4,7 @@ __pycache__
 !.vscode/settings.json
 llama.cpp
 models
+documents
 
 # Sphinx documentation build artifacts
 docs/_build/

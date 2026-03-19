@@ -19,7 +19,11 @@ Environment variables:
 
 import os
 import sys
+import logging
 from pathlib import Path
+
+# Suppress noisy UNEXPECTED key warnings from sentence-transformers checkpoints
+logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
 
 import gradio as gr
 from dotenv import load_dotenv
@@ -78,17 +82,6 @@ vector_store = PGVector(
 )
 
 # ---------------------------------------------------------------------------
-# Ingestor registry
-# Students: add a new entry here to make your ingestor appear in the UI.
-# ---------------------------------------------------------------------------
-
-INGESTORS = {
-    "Wikipedia": WikipediaIngestor(),
-    "Directory": DirectoryIngestor(),
-    # "URL":       URLIngestor(),                     # <-- Activity 5, Part 3
-}
-
-# ---------------------------------------------------------------------------
 # LLM backends
 # ---------------------------------------------------------------------------
 
@@ -115,8 +108,15 @@ llamacpp_client = ChatOpenAI(
 llamacpp_model = "gpt-oss-20b"
 
 # ---------------------------------------------------------------------------
-# RAG prompt
+# Ingestor registry
+# Students: add a new entry here to make your ingestor appear in the UI.
 # ---------------------------------------------------------------------------
+
+INGESTORS = {
+    "Wikipedia": WikipediaIngestor(),
+    "Directory": DirectoryIngestor(llm=llamacpp_client),
+    # "URL":       URLIngestor(),                     # <-- Activity 5, Part 3
+}
 
 RAG_PROMPT = ChatPromptTemplate.from_messages([
     (
@@ -253,7 +253,7 @@ with gr.Blocks(title="RAG Knowledge System") as demo:
         # Tab 1: Ingest
         # ------------------------------------------------------------------
         with gr.Tab("1. Ingest documents"):
-            gr.Markdown("""
+            ingest_instructions = gr.Markdown("""
             Type a Wikipedia topic to fetch and store articles in the knowledge base.
             You can ingest multiple topics — they accumulate in the same collection.
             """)
@@ -277,6 +277,40 @@ with gr.Blocks(title="RAG Knowledge System") as demo:
 
                 with gr.Column():
                     ingest_status = gr.Textbox(label="Status", lines=4, interactive=False)
+
+            # Update label/placeholder/instructions when ingestor selection changes
+            _SOURCE_META = {
+                "Wikipedia": (
+                    "Wikipedia topic",
+                    "e.g. Python programming language",
+                    "Type a Wikipedia topic to fetch and store articles in the knowledge base.\n"
+                    "You can ingest multiple topics — they accumulate in the same collection.",
+                ),
+                "Directory": (
+                    "Directory path",
+                    "e.g. data/documents  or  ~/projects/data",
+                    "Enter the path to a local directory containing documents to ingest.\n"
+                    "Supported formats: PDF, DOCX, Markdown, plain text.\n"
+                    "Relative paths are resolved from the project root. "
+                    "All files are ingested recursively — they accumulate in the same collection.",
+                ),
+            }
+
+            def _update_source_ui(ingestor_name):
+                meta = _SOURCE_META.get(
+                    ingestor_name,
+                    (ingestor_name + " source", "", "Enter the source for " + ingestor_name + ".")
+                )
+                return (
+                    gr.update(label=meta[0], placeholder=meta[1]),
+                    gr.update(value=meta[2]),
+                )
+
+            ingestor_radio.change(
+                fn=_update_source_ui,
+                inputs=[ingestor_radio],
+                outputs=[topic_input, ingest_instructions],
+            )
 
             ingest_btn.click(
                 fn=ingest_documents,
@@ -345,6 +379,7 @@ with gr.Blocks(title="RAG Knowledge System") as demo:
     | `HuggingFaceEmbeddings` | Turns text into vectors (numbers) that capture meaning |
     | `PGVector` | Stores vectors in PostgreSQL; finds nearest neighbours fast |
     | `WikipediaIngestor` | Loads + chunks Wikipedia articles |
+    | `DirectoryIngestor` | Loads + chunks PDF, DOCX, and text files from a directory |
     | Retriever | Finds the *k* most similar chunks to the question |
     | RAG chain | Injects retrieved chunks as context into the LLM prompt |
 
