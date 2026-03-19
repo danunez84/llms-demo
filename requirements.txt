@@ -9,6 +9,8 @@ langchain-openai
 langchain-postgres
 openai
 psycopg[binary]
+pypdf
+docx2txt
 python-dotenv
 sentence-transformers
 torch

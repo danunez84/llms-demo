@@ -34,7 +34,7 @@ from langchain_postgres import PGVector
 # Add src directory to path so relative ingestor imports work
 sys.path.insert(0, str(Path(__file__).parent))
 
-from ingestors import WikipediaIngestor
+from ingestors import WikipediaIngestor, DirectoryIngestor
 
 load_dotenv()
 
@@ -84,7 +84,7 @@ vector_store = PGVector(
 
 INGESTORS = {
     "Wikipedia": WikipediaIngestor(),
-    # "Files":     FileIngestor(directory="data/"),   # <-- Activity 5, Part 2
+    "Directory": DirectoryIngestor(),
     # "URL":       URLIngestor(),                     # <-- Activity 5, Part 3
 }
 
