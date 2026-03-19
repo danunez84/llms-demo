@@ -16,24 +16,22 @@ Usage:
 """
 
 import os
-# import sys
-# from pathlib import Path
 from typing import List
 import gradio as gr
 from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate #, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
-# from langchain_core.messages import HumanMessage, AIMessage
 from pydantic import BaseModel, Field
+
 
 # Load environment variables
 load_dotenv()
 
 # --- Configuration ---
 
-temperature = 0.7
+temperature = 0.1
 
 # --- Initialize backends ---
 
@@ -102,12 +100,12 @@ def demo_simple_chain(text: str, backend: str) -> tuple[str, str]:
     result = chain.invoke({"topic": text})
     
     explanation = f"""**Chain components:**
-1. Prompt template with system message and variable placeholder
-2. {backend} chat model
-3. StrOutputParser (extracts text from AIMessage)
+    1. Prompt template with system message and variable placeholder
+    2. {backend} chat model
+    3. StrOutputParser (extracts text from AIMessage)
 
-**Input:** topic = "{text}"
-"""
+    **Input:** topic = "{text}"
+    """
     
     return result, explanation
 
@@ -123,8 +121,7 @@ def demo_sentiment_analysis(text: str, backend: str) -> tuple[str, str]:
     # Create prompt with format instructions
     prompt = ChatPromptTemplate.from_messages([
         ("system", """You are a sentiment analysis expert. Analyze the sentiment of the given text.
-        
-{format_instructions}"""),
+        {format_instructions}"""),
         ("human", "{text}"),
     ])
     
@@ -140,20 +137,20 @@ def demo_sentiment_analysis(text: str, backend: str) -> tuple[str, str]:
         
         # Format output
         output = f"""**Sentiment:** {result['sentiment']}
-**Confidence:** {result['confidence']:.2%}
-**Key phrases:**
-{chr(10).join(f"- {phrase}" for phrase in result['key_phrases'])}"""
-        
-        explanation = f"""**Chain components:**
-1. Prompt template with format instructions
-2. {backend} chat model
-3. JsonOutputParser with Pydantic schema
+        **Confidence:** {result['confidence']:.2%}
+        **Key phrases:**
+        {chr(10).join(f"- {phrase}" for phrase in result['key_phrases'])}"""
+                
+                explanation = f"""**Chain components:**
+        1. Prompt template with format instructions
+        2. {backend} chat model
+        3. JsonOutputParser with Pydantic schema
 
-**Schema fields:**
-- sentiment (str): positive/negative/mixed
-- confidence (float): 0.0 to 1.0
-- key_phrases (list[str]): Supporting evidence
-"""
+        **Schema fields:**
+        - sentiment (str): positive/negative/mixed
+        - confidence (float): 0.0 to 1.0
+        - key_phrases (list[str]): Supporting evidence
+        """
         
         return output, explanation
     
@@ -180,8 +177,7 @@ def demo_entity_extraction(text: str, backend: str, entity_type: str) -> tuple[s
     
     prompt = ChatPromptTemplate.from_messages([
         ("system", """Extract {entity_type} information from the text.
-
-{format_instructions}"""),
+        {format_instructions}"""),
         ("human", "{text}"),
     ])
     
@@ -207,13 +203,13 @@ def demo_entity_extraction(text: str, backend: str, entity_type: str) -> tuple[s
                 output += f"**{key.replace('_', ' ').title()}:** {value}\n"
         
         explanation = f"""**Chain components:**
-1. Prompt template with dynamic entity type
-2. {backend} chat model
-3. JsonOutputParser with {entity_type} schema
+        1. Prompt template with dynamic entity type
+        2. {backend} chat model
+        3. JsonOutputParser with {entity_type} schema
 
-**Selected schema:** {entity_type}
-**Fields:** {', '.join(schema.model_fields.keys())}
-"""
+        **Selected schema:** {entity_type}
+        **Fields:** {', '.join(schema.model_fields.keys())}
+        """
         
         return output, explanation
     
@@ -245,18 +241,18 @@ def demo_few_shot(text: str, backend: str) -> tuple[str, str]:
     result = chain.invoke({"text": text})
     
     explanation = """**Chain components:**
-1. Prompt template with 4 few-shot examples
-2. Chat model (learns from examples)
-3. StrOutputParser
+    1. Prompt template with 4 few-shot examples
+    2. Chat model (learns from examples)
+    3. StrOutputParser
 
-**Few-shot examples:**
-- Technical: "efficacy", "methodology", "validated"
-- Casual: "Hey!", "super cool", informal language
-- Formal: "We are pleased", official tone
-- Creative: Metaphors, descriptive language
+    **Few-shot examples:**
+    - Technical: "efficacy", "methodology", "validated"
+    - Casual: "Hey!", "super cool", informal language
+    - Formal: "We are pleased", official tone
+    - Creative: Metaphors, descriptive language
 
-The model learns the pattern from examples!
-"""
+    The model learns the pattern from examples!
+    """
     
     return result.strip(), explanation
 
