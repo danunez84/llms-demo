@@ -82,8 +82,9 @@ def main():
         # Get text input from the user
         user_input = input('User: ')
 
-        # If the user types 'exit', break the loop and end the conversation
-        if user_input == 'exit':
+        # Check for exit condition
+        if user_input.lower() in ['exit', 'quit']:
+            print('Exiting chatbot.')
             break
 
         # Add the user's message to the conversation history
