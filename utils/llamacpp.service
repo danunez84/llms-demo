@@ -64,15 +64,16 @@ WorkingDirectory=/opt/llama.cpp
 # - Adjust --n-gpu-layers and other flags as needed
 #
 # NOTE: Systemd doesn't expand wildcards (*) in ExecStart!
+# -c 32768 sets a 32K token context window (~24,000 words — enough for the entire project documentation in a single prompt)
 ExecStart=/opt/llama.cpp/build/bin/llama-server \
     -m PATH_TO_MODEL \
     --n-gpu-layers 999 \
-    -c 8192 \
+    -c 32768 \
     --flash-attn on \
     --jinja \
     --host 0.0.0.0 \
     --port 8502 \
-    --api-key YOUR_API_KEY_HERE \
+    --api-key YOUR_API_KEY \
     --metrics \
     --log-timestamps \
     --log-prefix

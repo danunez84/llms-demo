@@ -11,13 +11,18 @@ Usage:
     python huggingface_chatbot.py
 '''
 
+import logging
 from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+# Suppress noisy key warnings from checkpoint loading
+logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
 
 # --- Configuration ---
 # Model to use from HuggingFace Hub
-model = 'Qwen/Qwen2.5-3B-Instruct'
+model_name = 'Qwen/Qwen2.5-3B-Instruct'
 
-# Temperature controls randomness (0.0 = deterministic, 1.0+ = creative)
+# Temperature controls randomness (0.0 = deterministic, 1.0 = creative)
 temperature = 0.7
 
 # Maximum number of tokens to generate in each response
@@ -31,10 +36,19 @@ system_prompt = (
 )
 
 # Load tokenizer (converts text to numbers the model understands)
-tokenizer = AutoTokenizer.from_pretrained(model)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+# Select the best available device (GPU > CPU)
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Load the actual model (downloads first time, then cached locally)
-model = AutoModelForCausalLM.from_pretrained(model)
+model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto").to(device)
+
+# Print the model architecture and number of parameters
+num_params = sum(p.numel() for p in model.parameters())
+print(f'\nLoaded model: {model_name} with {num_params/1e9:.2f} billion parameters on {device}')
+print(f'\nArchitecture:\n')
+print(model)
 
 
 def generate(messages):
@@ -73,13 +87,19 @@ def main():
     # Format matches OpenAI/HuggingFace chat message structure
     history = [{'role': 'system', 'content': system_prompt}]
 
-    print(f'\nChatbot ready. Model: {model}, temperature: {temperature}')
+    print(f'\nChatbot ready. Model: {model_name}, device: {device}, temperature: {temperature}')
 
     # Main conversation loop - runs until interrupted (Ctrl+C)
     while True:
 
         # Get user input
         user_input = input('User: ')
+
+        # Check for exit condition
+        if user_input.lower() in ['exit', 'quit']:
+            print('Exiting chatbot.')
+            break
+
         user_message = {'role': 'user', 'content': user_input}
         history.append(user_message)
 
@@ -90,7 +110,7 @@ def main():
         model_message = {'role': 'assistant', 'content': response}
         history.append(model_message)
 
-        print(f'\n{model}: {response}\n')
+        print(f'\n{model_name}: {response}\n')
 
 
 if __name__ == '__main__':

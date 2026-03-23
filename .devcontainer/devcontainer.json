@@ -1,12 +1,9 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
-	// Container definition for deeplearning development environment
-	// Based on NVIDIA's official TensorFlow 24.06 image with GPU support
-	// See here: https://hub.docker.com/r/gperdrizet/deeplearning-gpu
-    // And here: https://docs.nvidia.com/deeplearning/frameworks/tensorflow-release-notes/rel-24-06.html
-	"name": "DeepLearning GPU",
-	"image": "gperdrizet/deeplearning-gpu",
+	// Container definition
+	"name": "LLM application development",
+	"image": "gperdrizet/llms-gpu",
     "runArgs": [
 		"--gpus", "all",              // Enable all available GPUs in the container
 		"--pid=host",                 // Use host PIDs, needed for nvidia-smi process list
@@ -30,6 +27,7 @@
 
 		// Use 'settings' to set default VS code values on container create
 		"settings": {
+
 			// Set the default Python interpreter
 			"python.defaultInterpreterPath": "/usr/bin/python",
 			
