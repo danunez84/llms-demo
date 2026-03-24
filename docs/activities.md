@@ -124,3 +124,30 @@ Add a new document source to the RAG demo by implementing the `BaseIngestor` int
 
 **Location:** `activities/activity_5_rag_sources.md`
 
+
+## Activity 6: LoRA fine-tuning
+
+Use Low Rank Adaptation to fine tune a small qwen model
+
+**Duration:** 45-60 minutes
+
+**Skills practiced:**
+- Direct loading/prompting models (`transformers`)
+- Creating SFT datasets (ChatML format, `Dataset`)
+- LoRA fine-tuning (`SFTTrainer`)
+- Model evaluation
+
+**Prerequisites:**
+- Completed Activities 1-5
+- Python programming experience
+- Understanding of Lesson 50 (Fine-tuning)
+- Familiarity with model prompting and training in general
+
+**What you'll do:**
+- Prompt a base model and observe it's behavior
+- Create a small supervised fine-tuning dataset
+- Fine-tune the base model using LoRA
+- Compare the base and fine-tuned models
+
+**Location:** `activities/activity_6_finetuning.md`
+
